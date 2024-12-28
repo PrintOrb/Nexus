@@ -1,23 +1,30 @@
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const db = require('./db');
+const fs = require('fs');
 const app = express();
 
-// Database setup
-const dbPath = path.join(__dirname, 'database.db');
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('Could not connect to the database:', err.message);
-  } else {
-    console.log(`Connected to SQLite database at ${dbPath}`);
-  }
+// Define a fixed path to the /NexusCode/public directory
+const staticPath = path.join('L:\\', 'NexusCode', 'public');
+console.log(`Serving static files from: ${staticPath}`);
+
+// Middleware to serve static files from the fixed path
+app.use(express.static(staticPath));
+
+// Serve specific HTML files for their respective routes
+app.get('/', (req, res) => {
+  res.sendFile(path.join(staticPath, 'index.html'));
 });
 
-// Middleware
-app.use(express.json());
-app.use(express.static('public'));
+app.get('/database.html', (req, res) => {
+  res.sendFile(path.join(staticPath, 'database.html'));
+});
 
-// Route: Fetch all customers
+app.get('/customers.html', (req, res) => {
+  res.sendFile(path.join(staticPath, 'customers.html'));
+});
+
+// API Routes
 app.get('/api/customers', (req, res) => {
   db.all('SELECT * FROM customers', [], (err, rows) => {
     if (err) {
@@ -28,10 +35,8 @@ app.get('/api/customers', (req, res) => {
   });
 });
 
-// Route: Fetch a single customer and their items
 app.get('/api/customers/:id', (req, res) => {
   const { id } = req.params;
-
   db.get('SELECT * FROM customers WHERE id = ?', [id], (err, customer) => {
     if (err) {
       console.error('Error fetching customer:', err.message);
@@ -43,7 +48,7 @@ app.get('/api/customers/:id', (req, res) => {
 
     db.all('SELECT * FROM items WHERE customer_id = ?', [id], (err, items) => {
       if (err) {
-        console.error('Error fetching items for customer:', err.message);
+        console.error('Error fetching items:', err.message);
         return res.status(500).json({ error: 'Failed to fetch customer items' });
       }
       res.json({ customer, items });
@@ -51,10 +56,8 @@ app.get('/api/customers/:id', (req, res) => {
   });
 });
 
-// Route: Add a new customer
 app.post('/api/customers', (req, res) => {
   const { name, email, phone } = req.body;
-
   if (!name) {
     return res.status(400).json({ error: 'Customer name is required' });
   }
@@ -72,11 +75,9 @@ app.post('/api/customers', (req, res) => {
   );
 });
 
-// Route: Update a customer
 app.put('/api/customers/:id', (req, res) => {
   const { id } = req.params;
   const { name, email, phone } = req.body;
-
   if (!name) {
     return res.status(400).json({ error: 'Customer name is required' });
   }
@@ -97,10 +98,8 @@ app.put('/api/customers/:id', (req, res) => {
   );
 });
 
-// Route: Delete a customer
 app.delete('/api/customers/:id', (req, res) => {
   const { id } = req.params;
-
   db.run('DELETE FROM customers WHERE id = ?', [id], function (err) {
     if (err) {
       console.error('Error deleting customer:', err.message);
@@ -110,10 +109,8 @@ app.delete('/api/customers/:id', (req, res) => {
   });
 });
 
-// Route: Delete an item
 app.delete('/api/items/:id', (req, res) => {
   const { id } = req.params;
-
   db.run('DELETE FROM items WHERE id = ?', [id], function (err) {
     if (err) {
       console.error('Error deleting item:', err.message);
@@ -126,10 +123,8 @@ app.delete('/api/items/:id', (req, res) => {
   });
 });
 
-// Route: Fetch items for a specific customer
 app.get('/api/customers/:id/items', (req, res) => {
   const { id } = req.params;
-
   db.all('SELECT * FROM items WHERE customer_id = ?', [id], (err, items) => {
     if (err) {
       console.error('Error fetching items:', err.message);
@@ -139,11 +134,9 @@ app.get('/api/customers/:id/items', (req, res) => {
   });
 });
 
-// Route: Add a new item to a customer
 app.post('/api/customers/:id/items', (req, res) => {
   const { id } = req.params;
   const { name } = req.body;
-
   if (!name) {
     return res.status(400).json({ error: 'Item name is required' });
   }
@@ -164,6 +157,14 @@ app.post('/api/customers/:id/items', (req, res) => {
 // Fallback for undefined endpoints
 app.use('*', (req, res) => {
   res.status(404).json({ error: 'Endpoint not found' });
+});
+
+// Keep the window open for debugging if issues occur
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err.message);
+  console.error(err.stack);
+  console.log('Press Ctrl+C to exit...');
+  process.stdin.resume();
 });
 
 // Start the server
