@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "build-exe": "pkg . --output dist/app"
+    "build-exe": "pkg . --output app"
   },
   "bin": "index.js",
   "pkg": {
