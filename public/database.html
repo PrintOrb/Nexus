@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Management</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <h1>Database Management</h1>
+  <div class="container">
+    <!-- Customer Table -->
+    <h2>Customer List</h2>
+    <table id="customerTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Customers will be dynamically loaded here -->
+      </tbody>
+    </table>
+
+    <!-- Add Customer Form -->
+    <h2>Add New Customer</h2>
+    <form id="addCustomerForm">
+      <input type="text" id="customerName" placeholder="Name" required>
+      <input type="email" id="customerEmail" placeholder="Email">
+      <input type="text" id="customerPhone" placeholder="Phone">
+      <button type="submit">Add Customer</button>
+    </form>
+  </div>
+</body>
+</html>

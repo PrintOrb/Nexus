@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Details</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <h1>Customer Details</h1>
+  <div class="container" id="customerDetails">
+    <!-- Customer details will be dynamically loaded here -->
+  </div>
+  <div class="container">
+    <button id="editToggleButton" onclick="toggleEditForm()">Edit</button>
+    <div id="editCustomerContainer" style="display: none;">
+      <h2>Edit Customer</h2>
+      <form id="editCustomerForm">
+        <input type="text" id="editCustomerName" placeholder="Name" required>
+        <input type="email" id="editCustomerEmail" placeholder="Email">
+        <input type="text" id="editCustomerPhone" placeholder="Phone">
+        <button type="submit">Save Changes</button>
+      </form>
+      <h2>Manage Items</h2>
+      <form id="addItemForm">
+        <input type="text" id="itemName" placeholder="Item Name" required>
+        <button type="submit">Add Item</button>
+      </form>
+      <ul id="itemsList">
+        <!-- Items will be dynamically loaded here -->
+        <!-- Remove buttons will be toggled dynamically -->
+      </ul>
+    </div>
+  </div>
+  <div class="center">
+    <button onclick="goHome()">Back to Home</button>
+  </div>
+</body>
+</html>

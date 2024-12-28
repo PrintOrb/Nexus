@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Management Home</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <h1>Customer Management System</h1>
+  <div class="container center">
+    <p>Welcome to the Customer Management System! Use the options below to navigate:</p>
+    <!-- Search Bar -->
+    <div class="center">
+      <input type="text" id="searchBar" placeholder="Search customers by name, email, or phone">
+      <button onclick="searchCustomers()">Search</button>
+    </div>
+    <!-- Search Results -->
+    <div id="searchResults" class="center">
+      <!-- Results will be dynamically populated here -->
+    </div>
+    <!-- Navigation Buttons -->
+    <div class="center">
+      <button onclick="goToDatabase()">Manage Database</button>
+    </div>
+  </div>
+</body>
+</html>
+
+
