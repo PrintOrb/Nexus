@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "build-exe": "pkg . --output app"
+    "build-exe": "pkg . --targets node16-win-x64 --output app-win"
   },
   "bin": "index.js",
   "pkg": {
@@ -14,12 +14,11 @@
     ],
     "assets": [
       "public/**/*",
-      "database.db"
+      "database.db",
+      "node_modules/sqlite3/lib/binding/**/*"
     ],
     "targets": [
-      "node16-win-x64",
-      "node16-linux-x64",
-      "node16-macos-x64"
+      "node16-win-x64"
     ]
   },
   "dependencies": {

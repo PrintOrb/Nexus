@@ -2,32 +2,50 @@ const express = require('express');
 const path = require('path');
 const db = require('./db');
 const fs = require('fs');
+const { exec } = require('child_process');
 const app = express();
 
-// Determine the base path dynamically
+// Determine base path dynamically
 const isPkg = typeof process.pkg !== 'undefined';
 const basePath = isPkg ? path.dirname(process.execPath) : __dirname;
 
-// Serve static files dynamically from the executable's directory
+// Database and public directory paths
+const dbPath = path.join(basePath, 'database.db');
 const staticPath = path.join(basePath, 'public');
-console.log(`Serving static files from: ${staticPath}`);
 
+// Check for Node.js installation
+const checkNodeInstallation = () => {
+  exec('node -v', (err, stdout, stderr) => {
+    if (err) {
+      console.log('Node.js is not installed. Prompting user to download it.');
+      console.log('Please download Node.js from https://nodejs.org/ and install it.');
+      process.exit(1);
+    } else {
+      console.log(`Node.js version detected: ${stdout.trim()}`);
+    }
+  });
+};
+
+checkNodeInstallation();
+
+// Serve static files
 app.use(express.static(staticPath));
 
-// Serve specific HTML files for their respective routes
+// Set up database connection
+const sqlite3 = require('sqlite3').verbose();
+const database = new sqlite3.Database(dbPath, (err) => {
+  if (err) {
+    console.error('Failed to connect to database:', err.message);
+    process.exit(1);
+  }
+  console.log('Connected to the database.');
+});
+
+// Define routes
 app.get('/', (req, res) => {
   res.sendFile(path.join(staticPath, 'index.html'));
 });
 
-app.get('/database.html', (req, res) => {
-  res.sendFile(path.join(staticPath, 'database.html'));
-});
-
-app.get('/customers.html', (req, res) => {
-  res.sendFile(path.join(staticPath, 'customers.html'));
-});
-
-// API Routes
 app.get('/api/customers', (req, res) => {
   db.all('SELECT * FROM customers', [], (err, rows) => {
     if (err) {
@@ -162,8 +180,8 @@ app.use('*', (req, res) => {
   res.status(404).json({ error: 'Endpoint not found' });
 });
 
-// Start the server
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Nexus server running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
