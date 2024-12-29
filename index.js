@@ -4,11 +4,14 @@ const db = require('./db');
 const fs = require('fs');
 const app = express();
 
-// Define a fixed path to the /NexusCode/public directory
-const staticPath = path.join('L:\\', 'NexusCode', 'public');
+// Determine the base path dynamically
+const isPkg = typeof process.pkg !== 'undefined';
+const basePath = isPkg ? path.dirname(process.execPath) : __dirname;
+
+// Serve static files dynamically from the executable's directory
+const staticPath = path.join(basePath, 'public');
 console.log(`Serving static files from: ${staticPath}`);
 
-// Middleware to serve static files from the fixed path
 app.use(express.static(staticPath));
 
 // Serve specific HTML files for their respective routes
@@ -157,14 +160,6 @@ app.post('/api/customers/:id/items', (req, res) => {
 // Fallback for undefined endpoints
 app.use('*', (req, res) => {
   res.status(404).json({ error: 'Endpoint not found' });
-});
-
-// Keep the window open for debugging if issues occur
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err.message);
-  console.error(err.stack);
-  console.log('Press Ctrl+C to exit...');
-  process.stdin.resume();
 });
 
 // Start the server

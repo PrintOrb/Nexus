@@ -1,4 +1,1 @@
 app-* filter=lfs diff=lfs merge=lfs -text
-app-linux filter=lfs diff=lfs merge=lfs -text
-app-macos filter=lfs diff=lfs merge=lfs -text
-app-win filter=lfs diff=lfs merge=lfs -text
