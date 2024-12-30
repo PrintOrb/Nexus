@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "build-exe": "pkg . --targets node16-win-x64 --output app-win"
+    "build-exe": "pkg . --targets node16-win-x64,node16-linux-x64,node16-macos-x64 --output app"
   },
   "bin": "index.js",
   "pkg": {

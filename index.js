@@ -5,6 +5,10 @@ const fs = require('fs');
 const { exec } = require('child_process');
 const app = express();
 
+// Middleware to parse JSON and URL-encoded data
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Determine base path dynamically
 const isPkg = typeof process.pkg !== 'undefined';
 const basePath = isPkg ? path.dirname(process.execPath) : __dirname;
@@ -62,7 +66,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/customers', (req, res) => {
-  db.all('SELECT * FROM customers', [], (err, rows) => {
+  database.all('SELECT * FROM customers', [], (err, rows) => {
     if (err) {
       console.error('Error fetching customers:', err.message);
       return res.status(500).json({ error: 'Failed to fetch customers' });
@@ -73,7 +77,7 @@ app.get('/api/customers', (req, res) => {
 
 app.get('/api/customers/:id', (req, res) => {
   const { id } = req.params;
-  db.get('SELECT * FROM customers WHERE id = ?', [id], (err, customer) => {
+  database.get('SELECT * FROM customers WHERE id = ?', [id], (err, customer) => {
     if (err) {
       console.error('Error fetching customer:', err.message);
       return res.status(500).json({ error: 'Failed to fetch customer' });
@@ -82,7 +86,7 @@ app.get('/api/customers/:id', (req, res) => {
       return res.status(404).json({ error: 'Customer not found' });
     }
 
-    db.all('SELECT * FROM items WHERE customer_id = ?', [id], (err, items) => {
+    database.all('SELECT * FROM items WHERE customer_id = ?', [id], (err, items) => {
       if (err) {
         console.error('Error fetching items:', err.message);
         return res.status(500).json({ error: 'Failed to fetch customer items' });
@@ -98,7 +102,7 @@ app.post('/api/customers', (req, res) => {
     return res.status(400).json({ error: 'Customer name is required' });
   }
 
-  db.run(
+  database.run(
     'INSERT INTO customers (name, email, phone) VALUES (?, ?, ?)',
     [name, email, phone],
     function (err) {
@@ -118,7 +122,7 @@ app.put('/api/customers/:id', (req, res) => {
     return res.status(400).json({ error: 'Customer name is required' });
   }
 
-  db.run(
+  database.run(
     'UPDATE customers SET name = ?, email = ?, phone = ? WHERE id = ?',
     [name, email, phone, id],
     function (err) {
@@ -136,7 +140,7 @@ app.put('/api/customers/:id', (req, res) => {
 
 app.delete('/api/customers/:id', (req, res) => {
   const { id } = req.params;
-  db.run('DELETE FROM customers WHERE id = ?', [id], function (err) {
+  database.run('DELETE FROM customers WHERE id = ?', [id], function (err) {
     if (err) {
       console.error('Error deleting customer:', err.message);
       return res.status(500).json({ error: 'Failed to delete customer' });
@@ -147,7 +151,7 @@ app.delete('/api/customers/:id', (req, res) => {
 
 app.delete('/api/items/:id', (req, res) => {
   const { id } = req.params;
-  db.run('DELETE FROM items WHERE id = ?', [id], function (err) {
+  database.run('DELETE FROM items WHERE id = ?', [id], function (err) {
     if (err) {
       console.error('Error deleting item:', err.message);
       return res.status(500).json({ error: 'Failed to delete item' });
@@ -161,7 +165,7 @@ app.delete('/api/items/:id', (req, res) => {
 
 app.get('/api/customers/:id/items', (req, res) => {
   const { id } = req.params;
-  db.all('SELECT * FROM items WHERE customer_id = ?', [id], (err, items) => {
+  database.all('SELECT * FROM items WHERE customer_id = ?', [id], (err, items) => {
     if (err) {
       console.error('Error fetching items:', err.message);
       return res.status(500).json({ error: 'Failed to fetch items' });
@@ -177,7 +181,7 @@ app.post('/api/customers/:id/items', (req, res) => {
     return res.status(400).json({ error: 'Item name is required' });
   }
 
-  db.run(
+  database.run(
     'INSERT INTO items (name, customer_id) VALUES (?, ?)',
     [name, id],
     function (err) {
@@ -200,4 +204,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-

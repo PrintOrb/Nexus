@@ -2,8 +2,11 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 
-// Hardcoded path to the database file in the /NexusCode/ directory
-const basePath = path.join('L:\\', 'NexusCode');
+// Determine base path dynamically
+const isPkg = typeof process.pkg !== 'undefined';
+const basePath = isPkg ? path.dirname(process.execPath) : __dirname;
+
+// Database path
 const dbPath = path.join(basePath, 'database.db');
 
 // Debugging logs
