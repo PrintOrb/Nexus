@@ -13,6 +13,11 @@ const basePath = isPkg ? path.dirname(process.execPath) : __dirname;
 const dbPath = path.join(basePath, 'database.db');
 const staticPath = path.join(basePath, 'public');
 
+// Log paths for debugging
+console.log(`Base Path: ${basePath}`);
+console.log(`Database Path: ${dbPath}`);
+console.log(`Static Files Path: ${staticPath}`);
+
 // Check for Node.js installation
 const checkNodeInstallation = () => {
   exec('node -v', (err, stdout, stderr) => {
@@ -29,9 +34,19 @@ const checkNodeInstallation = () => {
 checkNodeInstallation();
 
 // Serve static files
+if (!fs.existsSync(staticPath)) {
+  console.error(`Static files directory not found: ${staticPath}`);
+  console.log('Ensure the "public" directory is in the correct location.');
+  process.exit(1);
+}
 app.use(express.static(staticPath));
 
 // Set up database connection
+if (!fs.existsSync(dbPath)) {
+  console.error(`Database file not found: ${dbPath}`);
+  console.log('Ensure the database file is in the correct location.');
+  process.exit(1);
+}
 const sqlite3 = require('sqlite3').verbose();
 const database = new sqlite3.Database(dbPath, (err) => {
   if (err) {
@@ -185,3 +200,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
