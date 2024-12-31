@@ -59,6 +59,25 @@ app.get('/api/customers', (req, res) => {
   });
 });
 
+app.get('/api/customers/search', (req, res) => {
+  const query = req.query.query;
+  if (!query) {
+    return res.status(400).json({ error: 'Query parameter is required.' });
+  }
+
+  database.all(
+    `SELECT * FROM customers WHERE name LIKE ? OR email LIKE ? OR phone LIKE ?`,
+    [`%${query}%`, `%${query}%`, `%${query}%`],
+    (err, rows) => {
+      if (err) {
+        console.error('Error searching customers:', err.message);
+        return res.status(500).json({ error: 'Failed to search customers' });
+      }
+      res.json(rows);
+    }
+  );
+});
+
 app.get('/api/customers/:id', (req, res) => {
   const { id } = req.params;
   database.get('SELECT * FROM customers WHERE id = ?', [id], (err, customer) => {

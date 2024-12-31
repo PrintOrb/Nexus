@@ -146,6 +146,42 @@ async function loadCustomerDetails() {
   }
 }
 
+// Search for customers based on query
+async function searchCustomers() {
+  const query = document.getElementById('searchBar').value.trim();
+  if (!query) {
+    alert('Please enter a search query.');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${apiUrl}/customers/search?query=${encodeURIComponent(query)}`);
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+    const results = await response.json();
+
+    const resultsDiv = document.getElementById('searchResults');
+    resultsDiv.innerHTML = '';
+
+    if (results.length === 0) {
+      resultsDiv.textContent = 'No results found.';
+      return;
+    }
+
+    results.forEach(customer => {
+      const resultItem = document.createElement('div');
+      resultItem.innerHTML = `
+        <strong>${customer.name}</strong> - ${customer.email || 'No email'}, ${customer.phone || 'No phone'}
+        <button onclick="goToCustomerDetails(${customer.id})">View Details</button>
+      `;
+      resultsDiv.appendChild(resultItem);
+    });
+  } catch (error) {
+    console.error('Error searching customers:', error);
+    alert('Failed to search customers.');
+  }
+}
+
 
 // Toggle the visibility of the edit form
 function toggleEditForm() {
@@ -290,7 +326,3 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 });
-
-
-
-
