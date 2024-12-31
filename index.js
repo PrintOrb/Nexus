@@ -2,7 +2,6 @@ const express = require('express');
 const path = require('path');
 const db = require('./db');
 const fs = require('fs');
-const { exec } = require('child_process');
 const app = express();
 
 // Middleware to parse JSON and URL-encoded data
@@ -21,21 +20,6 @@ const staticPath = path.join(basePath, 'public');
 console.log(`Base Path: ${basePath}`);
 console.log(`Database Path: ${dbPath}`);
 console.log(`Static Files Path: ${staticPath}`);
-
-// Check for Node.js installation
-const checkNodeInstallation = () => {
-  exec('node -v', (err, stdout, stderr) => {
-    if (err) {
-      console.log('Node.js is not installed. Prompting user to download it.');
-      console.log('Please download Node.js from https://nodejs.org/ and install it.');
-      process.exit(1);
-    } else {
-      console.log(`Node.js version detected: ${stdout.trim()}`);
-    }
-  });
-};
-
-checkNodeInstallation();
 
 // Serve static files
 if (!fs.existsSync(staticPath)) {
@@ -204,3 +188,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
