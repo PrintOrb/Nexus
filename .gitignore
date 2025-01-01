@@ -1,1 +1,8 @@
 bfg-1.14.0.jar
+
+
+# Docker-related files and directories
+*.env
+Dockerfile
+docker-compose.yml
+.dockerignore
