@@ -1,8 +1,13 @@
 bfg-1.14.0.jar
-
+.vscode/
 
 # Docker-related files and directories
 *.env
 Dockerfile
 docker-compose.yml
 .dockerignore
+
+# Compiled executables
+app-win.exe
+app-linux
+app-macos

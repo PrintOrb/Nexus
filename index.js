@@ -77,7 +77,7 @@ app.get('/api/customers/search', (req, res) => {
     }
   );
 });
-
+// Get customer by ID
 app.get('/api/customers/:id', (req, res) => {
   const { id } = req.params;
   database.get('SELECT * FROM customers WHERE id = ?', [id], (err, customer) => {
@@ -98,7 +98,7 @@ app.get('/api/customers/:id', (req, res) => {
     });
   });
 });
-
+// Add customer
 app.post('/api/customers', (req, res) => {
   const { name, email, phone } = req.body;
   if (!name) {
@@ -117,30 +117,32 @@ app.post('/api/customers', (req, res) => {
     }
   );
 });
-
 app.put('/api/customers/:id', (req, res) => {
   const { id } = req.params;
-  const { name, email, phone } = req.body;
+  const { name, email, phone, notes } = req.body;
+
   if (!name) {
     return res.status(400).json({ error: 'Customer name is required' });
   }
 
   database.run(
-    'UPDATE customers SET name = ?, email = ?, phone = ? WHERE id = ?',
-    [name, email, phone, id],
+    'UPDATE customers SET name = ?, email = ?, phone = ?, notes = ? WHERE id = ?',
+    [name, email, phone, notes, id],
     function (err) {
       if (err) {
         console.error('Error updating customer:', err.message);
         return res.status(500).json({ error: 'Failed to update customer' });
       }
+
       if (this.changes === 0) {
         return res.status(404).json({ error: 'Customer not found' });
       }
+
       res.json({ message: 'Customer updated' });
     }
   );
 });
-
+// Delete customer
 app.delete('/api/customers/:id', (req, res) => {
   const { id } = req.params;
   database.run('DELETE FROM customers WHERE id = ?', [id], function (err) {
@@ -151,7 +153,7 @@ app.delete('/api/customers/:id', (req, res) => {
     res.json({ message: 'Customer deleted', id });
   });
 });
-
+// Delete item
 app.delete('/api/items/:id', (req, res) => {
   const { id } = req.params;
   database.run('DELETE FROM items WHERE id = ?', [id], function (err) {
@@ -165,7 +167,7 @@ app.delete('/api/items/:id', (req, res) => {
     res.json({ message: 'Item deleted' });
   });
 });
-
+// Get items for customer
 app.get('/api/customers/:id/items', (req, res) => {
   const { id } = req.params;
   database.all('SELECT * FROM items WHERE customer_id = ?', [id], (err, items) => {
@@ -176,7 +178,7 @@ app.get('/api/customers/:id/items', (req, res) => {
     res.json(items);
   });
 });
-
+// Add item to customer
 app.post('/api/customers/:id/items', (req, res) => {
   const { id } = req.params;
   const { name } = req.body;

@@ -1,4 +1,3 @@
-.vscode/settings.json
 app-linux
 app-macos
 app-win.exe

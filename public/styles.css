@@ -29,6 +29,55 @@ button:hover {
   background-color: #0056b3;
 }
 
+/* Delete Button Styles */
+.remove-button {
+  background-color: #007BFF; /* Match the main button color */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 12px;
+  margin-left: 10px;
+}
+
+.remove-button:hover {
+  background-color: #0056b3; /* Slightly darker for hover effect */
+}
+
+/* Items List Styles */
+ul#itemsList {
+  list-style: disc; /* Restore bullet points */
+  padding-left: 20px; /* Indent the list for better spacing */
+}
+
+.item-entry {
+  display: list-item; /* Keeps the bullet points */
+  list-style-position: inside; /* Ensures bullets are inside the content area */
+}
+
+.item-entry span {
+  display: inline-block; /* Ensures the text stays inline */
+}
+
+.item-entry button {
+  display: inline-block; /* Keeps the button inline with the item */
+  margin-left: 10px; /* Adds spacing between the item name and button */
+}
+
+/* Notes Textarea */
+textarea {
+  width: calc(100% - 22px); /* Match the width of the inputs */
+  height: 175px; /* Set the height */
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  resize: none; /* Prevent manual resizing */
+}
+
 /* Table Styles */
 table {
   width: 90%;
@@ -100,3 +149,4 @@ form button {
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+

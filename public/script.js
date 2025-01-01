@@ -100,7 +100,7 @@ async function deleteCustomer(customerId) {
   }
 }
 
-// Load customer details (customers.html)
+// Load customer details and associated items (customers.html)
 async function loadCustomerDetails() {
   const params = new URLSearchParams(window.location.search);
   const customerId = params.get('customerId');
@@ -117,21 +117,19 @@ async function loadCustomerDetails() {
 
     const { customer, items } = await response.json();
 
-    // Populate Customer Details
     const detailsDiv = document.getElementById('customerDetails');
     detailsDiv.innerHTML = `
       <h2>${customer.name || 'Customer Name Not Found'}</h2>
       <p>Email: ${customer.email || 'No email provided'}</p>
       <p>Phone: ${customer.phone || 'No phone number provided'}</p>
-      <h3>Items:</h3>
       <ul id="itemsList">
         ${items.length > 0
           ? items
               .map(
                 item => `
-              <li>
-                ${item.name}
-                <button class="remove-button" onclick="removeItem(${item.id}, this)" style="display: none;">Remove</button>
+              <li class="item-entry">
+                <span>${item.name}</span>
+                <button class="remove-button" onclick="removeItem(${item.id}, this)" style="display: none;">X</button>
               </li>
             `
               )
@@ -139,6 +137,12 @@ async function loadCustomerDetails() {
           : '<li>No items associated with this customer.</li>'}
       </ul>
     `;
+
+    // Populate edit form fields
+    document.getElementById('editCustomerName').value = customer.name || '';
+    document.getElementById('editCustomerEmail').value = customer.email || '';
+    document.getElementById('editCustomerPhone').value = customer.phone || '';
+    document.getElementById('editCustomerNotes').value = customer.notes || ''; // Populate notes
   } catch (error) {
     console.error('Error loading customer details:', error);
     document.getElementById('customerDetails').innerHTML =
@@ -182,19 +186,17 @@ async function searchCustomers() {
   }
 }
 
-
 // Toggle the visibility of the edit form
 function toggleEditForm() {
   const editContainer = document.getElementById('editCustomerContainer');
   const editButton = document.getElementById('editToggleButton');
   const removeButtons = document.querySelectorAll('.remove-button');
 
-  // Toggle the visibility of the edit form
   if (editContainer.style.display === 'none') {
     editContainer.style.display = 'block';
     editButton.textContent = 'Cancel';
 
-    // Show all Remove buttons
+    // Show all "X" buttons
     removeButtons.forEach(button => {
       button.style.display = 'inline-block';
     });
@@ -202,7 +204,7 @@ function toggleEditForm() {
     editContainer.style.display = 'none';
     editButton.textContent = 'Edit';
 
-    // Hide all Remove buttons
+    // Hide all "X" buttons
     removeButtons.forEach(button => {
       button.style.display = 'none';
     });
@@ -267,6 +269,7 @@ async function updateCustomer(event) {
   const name = document.getElementById('editCustomerName').value.trim();
   const email = document.getElementById('editCustomerEmail').value.trim();
   const phone = document.getElementById('editCustomerPhone').value.trim();
+  const notes = document.getElementById('editCustomerNotes').value.trim();
 
   if (!customerId || !name) {
     alert('Customer ID or Name is missing.');
@@ -277,12 +280,14 @@ async function updateCustomer(event) {
     const response = await fetch(`${apiUrl}/customers/${customerId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, phone }),
+      body: JSON.stringify({ name, email, phone, notes }),
     });
 
     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
     alert('Customer updated successfully!');
+
+    // No longer clearing the notes field to ensure notes remain visible
     toggleEditForm();
     loadCustomerDetails();
   } catch (error) {
@@ -295,12 +300,25 @@ async function updateCustomer(event) {
 function toggleEditForm() {
   const editContainer = document.getElementById('editCustomerContainer');
   const editButton = document.getElementById('editToggleButton');
+  const removeButtons = document.querySelectorAll('.remove-button');
+
+  // Toggle edit form visibility
   if (editContainer.style.display === 'none') {
     editContainer.style.display = 'block';
     editButton.textContent = 'Cancel';
+
+    // Show all delete buttons
+    removeButtons.forEach(button => {
+      button.style.display = 'inline-block';
+    });
   } else {
     editContainer.style.display = 'none';
     editButton.textContent = 'Edit';
+
+    // Hide all delete buttons
+    removeButtons.forEach(button => {
+      button.style.display = 'none';
+    });
   }
 }
 
