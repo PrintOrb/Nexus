@@ -24,14 +24,52 @@
     </ul>
     -->
   </div>
+
+  <!-- Customer Tickets Section -->
+  <div class="container" id="customerTickets">
+    <h2>Customer Tickets</h2>
+    <p id="openTicketsSummary">Loading tickets...</p>
+    <ul id="openTicketsList">
+      <!-- Open tickets will be dynamically loaded here -->
+    </ul>
+    <button id="viewTicketsButton" style="display: none;" onclick="viewTickets()">View Tickets</button>
+  </div>
+
+  <!-- Ticket Notes Section -->
+  <div id="ticketNotesContainer" style="display: none;" class="container">
+    <h3 id="ticketNotesTitle">Ticket Notes</h3>
+    <ul id="ticketNotesList">
+      <!-- Notes will be dynamically loaded here -->
+    </ul>
+  </div>
+
+  <!-- Time Entry Section -->
+  <div id="timeEntryContainer" style="display: none;" class="container">
+    <h3>Add Time Entry</h3>
+    <form id="timeEntryForm">
+      <label for="timeSpent">Time Spent (in hours):</label>
+      <input type="number" id="timeSpent" step="0.1" min="0" placeholder="Enter time spent" required>
+      <label for="timeDescription">Description:</label>
+      <textarea id="timeDescription" placeholder="Describe the work done" required></textarea>
+      <button type="submit">Add Time Entry</button>
+    </form>
+  </div>
+
+  <!-- Edit Form Section -->
   <div class="container">
     <button id="editToggleButton" onclick="toggleEditForm()">Edit</button>
     <div id="editCustomerContainer" style="display: none;">
       <h2>Edit Customer</h2>
+      <!-- Update the form ID to reflect its purpose -->
       <form id="editCustomerForm">
         <input type="text" id="editCustomerName" placeholder="Name" required>
-        <input type="email" id="editCustomerEmail" placeholder="Email">
-        <input type="text" id="editCustomerPhone" placeholder="Phone">
+        <input type="email" id="editCustomerEmail" placeholder="Email (e.g., user@example.com)" required>
+        <input
+          type="text"
+          id="editCustomerPhone"
+          placeholder="Phone (e.g., 123-456-7890)"
+          required
+        >
         <textarea id="editCustomerNotes" placeholder="Notes"></textarea>
         <button type="submit">Save Changes</button>
       </form>
@@ -43,9 +81,10 @@
     </div>
   </div>
   <div class="center">
-    <button onclick="goHome()">Back to Home</button>
+    <button class="back-to-home">Back to Home</button>
   </div>
-</body>
-</html>
+  </body>
+  </html>
+
 
 

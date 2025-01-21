@@ -98,16 +98,32 @@ app.get('/api/customers/:id', (req, res) => {
     });
   });
 });
+
 // Add customer
 app.post('/api/customers', (req, res) => {
   const { name, email, phone } = req.body;
-  if (!name) {
-    return res.status(400).json({ error: 'Customer name is required' });
+
+  if (!name || !email || !phone) {
+    return res.status(400).json({ error: 'Name, email, and phone are required.' });
   }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneDigits = phone.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+  const phoneRegex = /^\d{10}$/;
+
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ error: 'Invalid email format.' });
+  }
+
+  if (!phoneRegex.test(phoneDigits)) {
+    return res.status(400).json({ error: 'Phone number must be exactly 10 digits.' });
+  }
+
+  const formattedPhone = `${phoneDigits.slice(0, 3)}-${phoneDigits.slice(3, 6)}-${phoneDigits.slice(6)}`;
 
   database.run(
     'INSERT INTO customers (name, email, phone) VALUES (?, ?, ?)',
-    [name, email, phone],
+    [name, email, formattedPhone],
     function (err) {
       if (err) {
         console.error('Error adding customer:', err.message);
@@ -117,6 +133,8 @@ app.post('/api/customers', (req, res) => {
     }
   );
 });
+
+//
 app.put('/api/customers/:id', (req, res) => {
   const { id } = req.params;
   const { name, email, phone, notes } = req.body;
@@ -197,6 +215,92 @@ app.post('/api/customers/:id/items', (req, res) => {
       res.status(201).json({ message: 'Item added', id: this.lastID });
     }
   );
+});
+
+// Get tickets
+app.get('/api/tickets', (req, res) => {
+  const { type, status, customerId } = req.query;
+
+  let query = 'SELECT * FROM tickets WHERE 1=1';
+  const params = [];
+
+  if (type) {
+    query += ' AND type = ?';
+    params.push(type);
+  }
+  if (status) {
+    query += ' AND status = ?';
+    params.push(status);
+  }
+  if (customerId) {
+    query += ' AND customer_id = ?';
+    params.push(customerId);
+  }
+
+  database.all(query, params, (err, rows) => {
+    if (err) {
+      console.error('Error fetching tickets:', err.message);
+      return res.status(500).json({ error: 'Failed to fetch tickets', details: err.message });
+    }
+    res.json(rows);
+  });
+});
+
+// Get ticket by ID
+app.get('/api/customers/:customerId/tickets', (req, res) => {
+  const { customerId } = req.params;
+
+  const query = `
+    SELECT id, type, description, status, created_at 
+    FROM tickets 
+    WHERE customer_id = ?
+    ORDER BY created_at DESC
+  `;
+
+  database.all(query, [customerId], (err, rows) => {
+    if (err) {
+      console.error('Error fetching customer tickets:', err.message);
+      return res.status(500).json({ error: 'Failed to fetch customer tickets' });
+    }
+    res.json(rows);
+  });
+});
+
+// Add ticket
+app.get('/api/tickets/:ticketId/notes', (req, res) => {
+  const { ticketId } = req.params;
+
+  const query = 'SELECT note, created_at FROM ticket_notes WHERE ticket_id = ? ORDER BY created_at ASC';
+  database.all(query, [ticketId], (err, rows) => {
+    if (err) {
+      console.error('Error fetching ticket notes:', err.message);
+      return res.status(500).json({ error: 'Failed to fetch ticket notes' });
+    }
+    res.json(rows);
+  });
+});
+
+// Add ticket note
+app.post('/api/tickets/:ticketId/notes', (req, res) => {
+  const { ticketId } = req.params;
+  const { note } = req.body; // No need for timeSpent if it's not in the schema
+
+  if (!note) {
+    return res.status(400).json({ error: 'Note is required.' });
+  }
+
+  const query = `
+    INSERT INTO ticket_notes (ticket_id, note, created_at)
+    VALUES (?, ?, DATETIME('now'))
+  `;
+
+  database.run(query, [ticketId, note], function (err) {
+    if (err) {
+      console.error('Error adding note:', err.message);
+      return res.status(500).json({ error: 'Failed to add note.' });
+    }
+    res.status(201).json({ message: 'Note added successfully.', id: this.lastID });
+  });
 });
 
 // Fallback for undefined endpoints

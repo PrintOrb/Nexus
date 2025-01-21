@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ticket Management</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header>
+    <h1>Ticket Management</h1>
+  </header>
+
+  <main class="container">
+    <!-- Ticket Filters -->
+    <section id="ticketFilters">
+      <h2>Filter Tickets</h2>
+      <form id="filterForm">
+        <label for="type">Type:</label>
+        <select id="type">
+          <option value="">All</option>
+          <option value="customer">Customer</option>
+          <option value="internal">Internal</option>
+        </select>
+
+        <label for="status">Status:</label>
+        <select id="status">
+          <option value="">All</option>
+          <option value="open">Open</option>
+          <option value="in-progress">In Progress</option>
+          <option value="closed">Closed</option>
+        </select>
+
+        <label for="customerId">Customer ID:</label>
+        <input type="text" id="customerId" placeholder="Enter Customer ID">
+
+        <button type="submit">Filter</button>
+      </form>
+    </section>
+
+    <div id="ticketNotesModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <span class="close-button" onclick="closeNotesModal()">&times;</span>
+        <h2 class="modal-header">Ticket Notes</h2>
+        <div id="notesContainer">
+          <ul id="notesList">
+            <!-- Notes will be dynamically loaded here -->
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ticket List -->
+    <section id="ticketList">
+      <h2>All Tickets</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Customer ID</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Tickets will be dynamically loaded here -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Create Ticket -->
+    <form id="createTicketForm">
+        <label for="ticketType">Type:</label>
+        <select id="ticketType" required>
+          <option value="customer">Customer</option>
+          <option value="internal">Internal</option>
+        </select>
+
+        <label for="ticketDescription">Description:</label>
+        <textarea id="ticketDescription" placeholder="Enter ticket description" required></textarea>
+
+        <label for="customerDropdown">Customer:</label>
+        <div class="searchable-dropdown">
+          <input type="text" id="customerSearch" placeholder="Search by name, email, or phone">
+          <select id="customerDropdown">
+            <option value="">Select a Customer</option>
+            <!-- Options will be dynamically populated here -->
+          </select>
+        </div>
+
+        <button type="submit">Create Ticket</button>
+      </form>
+
+    <!-- Edit Ticket Modal -->
+    <div id="editTicketModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <span class="close-button" onclick="closeEditModal()">&times;</span>
+        <h2>Edit Ticket</h2>
+        <form id="editTicketForm">
+          <label for="customerSearch">Customer:</label>
+          <div class="searchable-dropdown">
+            <input type="text" id="editCustomerSearch" placeholder="Search by name, email, or phone">
+            <select id="editCustomerDropdown" required>
+              <option value="">Select a Customer</option>
+              <!-- Options will be dynamically populated -->
+            </select>
+          </div>
+          <button type="submit">Save</button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="center">
+    <button class="back-to-home">Back to Home</button>
+  </footer>
+</body>
+</html>
